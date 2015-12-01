@@ -22,6 +22,9 @@
 	"dependencies": {
 		"angular":"~1.2.0"
 	},
+	"main": {
+		"general-utilities.js"
+	},
 	"devDependencies": {
 	}
 }
