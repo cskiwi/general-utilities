@@ -26,7 +26,8 @@ var app = angular.module('cskiwi.general-utilities', [])
         }, false);
 
         // update changes
-        $rootScope.$watch('online', function(newStatus) {
+        $rootScope.$watch('online', function (newStatus) {
+            // broadcast status
             $rootScope.$broadcast('onlineUpdate', newStatus);
         });
 
