@@ -1,4 +1,9 @@
 Version numbers correspond to `bower.json` version
+# 0.1.4
+
+## Features
+Added live update for networkstatus
+
 # 0.1.3
 
 ## Bug Fixes
