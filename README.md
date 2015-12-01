@@ -37,7 +37,7 @@ https://github.com/cskiwi/general-utilities/blob/master/general-utilities.js
 	3. git commit your changes
 2. copy over core files (.js and .css/.less for directives) to master branch
 	1. `git checkout master`
-	2. `git checkout gh-pages general-utilities.js general-utilities.min.js general-utilities.less general-utilities.css general-utilities.min.css`
+	2. `git checkout gh-pages general-utilities.js general-utilities.min.js`
 3. update README, CHANGELOG, bower.json, and do any other final polishing to prepare for publishing
 	1. git commit changes
 	2. git tag with the version number, i.e. `git tag v1.0.0`
