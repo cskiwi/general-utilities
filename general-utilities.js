@@ -69,8 +69,6 @@ var app = angular.module('cskiwi.general-utilities', [])
         info.isIE = /*@cc_on!@*/false || !!document.documentMode; // At least IE6
 
         info.mobile = isMobile();
-
-
         return info;
     };
 
