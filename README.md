@@ -7,7 +7,8 @@ http://cskiwi.github.io/general-utilities/
 
 ## Dependencies
 - required:
-	[TODO]
+	nothing yet
+	
 - optional
 	Cordova
 
