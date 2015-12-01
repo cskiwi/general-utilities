@@ -32,7 +32,7 @@ var app = angular.module('cskiwi.general-utilities', [])
 
         return { online: online };
     };
-
+     
     var deviceInfo = function() {
         var info = {
             isFirefox: false,
