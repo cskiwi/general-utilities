@@ -23,7 +23,7 @@
 		"angular":"~1.2.0"
 	},
 	"main": {
-		"general-utilities.js"
+		"general-utilities.js" 
 	},
 	"devDependencies": {
 	}
