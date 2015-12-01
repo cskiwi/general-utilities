@@ -7,5 +7,4 @@ angular.module('general-utilities-demo').controller('HomeCtrl', function ($scope
     $scope.networkInfo = cskiwiUtilities.networkInfo();
     $scope.deviceInfo = cskiwiUtilities.deviceInfo();
 
-
 });

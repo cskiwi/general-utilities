@@ -25,7 +25,7 @@ var app = angular.module('cskiwi.general-utilities', [])
             });
         }, false);
 
-        // update changines
+        // update changes
         $rootScope.$watch('online', function(newStatus) {
             $rootScope.$broadcast('onlineUpdate', newStatus);
         });
