@@ -81,8 +81,8 @@ module.exports = function(grunt) {
 				},
 				build: {
 					files:  {},
-					src:    '-utilities.js',
-					dest:   '-utilities.min.js'
+					src:    'general-utilities.js',
+					dest: 'general-utilities.min.js'
 				}
 			}/*,
 			karma: {
