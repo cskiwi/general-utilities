@@ -19,8 +19,8 @@ config(['$routeProvider', '$locationProvider', '$compileProvider', function($rou
 	// var staticPath ='/';
 	var staticPath;
 	// staticPath ='/angular-services/general-utilities/';		//local
-	staticPath ='/';		//nodejs (local)
-	// staticPath ='/general-utilities/';		//gh-pages
+	// staticPath ='/';		//nodejs (local)
+	staticPath ='/general-utilities/';		//gh-pages
 	var appPathRoute ='/';
 	var pagesPath =staticPath+'pages/';
 	
