@@ -40,7 +40,7 @@ var app = angular.module('cskiwi.general-utilities', [])
             isSafarie: false,
             isChrome: false,
             isIe: false,
-            isOpera: false,
+            isOpera: false
         };
 
         function isMobile() {
