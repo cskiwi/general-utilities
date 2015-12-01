@@ -3,6 +3,9 @@
 
 'use strict';
 
-angular.module('myApp').controller('HomeCtrl', ['$scope', 'cskiwiUtilities', function($scope, cskiwiUtilities) {
-	//TODO - put any directive code here
-}]);
+angular.module('general-utilities-demo').controller('HomeCtrl', function ($scope, $rootScope, cskiwiUtilities) {
+    $scope.networkInfo = cskiwiUtilities.networkInfo();
+    $scope.deviceInfo = cskiwiUtilities.deviceInfo();
+
+
+});

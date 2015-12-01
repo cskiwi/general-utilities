@@ -5,11 +5,11 @@
 
 'use strict';
 
-angular.module('myApp', [
+angular.module('general-utilities-demo', [
 'ngRoute', 'ngSanitize', 'ngTouch',		//additional angular modules
 'cskiwi.general-utilities'
 ]).
-config(['$routeProvider', '$locationProvider', '$compileProvider', function ($routeProvider, $locationProvider, $compileProvider) {
+config(function ($routeProvider, $locationProvider, $compileProvider) {
     /**
 	setup - whitelist, appPath, html5Mode
 	@toc 1.
@@ -29,4 +29,4 @@ config(['$routeProvider', '$locationProvider', '$compileProvider', function ($ro
 
     $routeProvider.otherwise({ redirectTo: appPathRoute + 'home' });
 
-}]);
+});
