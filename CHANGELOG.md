@@ -1,4 +1,11 @@
 Version numbers correspond to `bower.json` version
+# 0.1.6
+
+## Features
+online / offline status is rmeoved from $rootScope
+## Bug Fixes
+network info is auto updated on network changes
+
 # 0.1.5
 
 ## Features
