@@ -1,10 +1,3 @@
-/**
-@fileOverview
-
-@toc
-
-*/
-
 'use strict';
 
 var app = angular.module('cskiwi.general-utilities', [])
