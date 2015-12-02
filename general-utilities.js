@@ -3,8 +3,8 @@
 var app = angular.module('cskiwi.general-utilities', [])
 .factory('cskiwiUtilities', function ($rootScope, $window, $timeout) {
     var activePlugins = {
-        network = false,
-        device = false
+        network : false,
+        device : false
     };
 
     //public methods & properties
@@ -36,7 +36,7 @@ var app = angular.module('cskiwi.general-utilities', [])
         info.isChrome = !!window.chrome && !info.isOpera; // Chrome 1+
         info.isIe = /*@cc_on!@*/false || !!document.documentMode; // At least IE6
 
-        if (window.cordova) {
+        if (window.cordova && activePlugins.device){
             info.device = {};
             info.device.name = device.name;
             info.device.cordova = device.cordova;
@@ -57,7 +57,7 @@ var app = angular.module('cskiwi.general-utilities', [])
         var info = {
             online: window.navigator.onLine
         };
-        if (window.cordova) {
+        if (window.cordova && activePlugins.network) {
             info.connection = {};
             info.connection.type = navigator.connection.type;
         }
@@ -71,7 +71,7 @@ var app = angular.module('cskiwi.general-utilities', [])
                 if (window.navigator.onLine !== info.online)
                     info.online = window.navigator.onLine;
 
-                if (window.cordova && window.navigator.onLine === true) {
+                if (window.cordova && window.navigator.onLine === true && activePlugins.network) {
                     if (info.connection.type !== navigator.connection.type)
                         info.connection.type = navigator.connection.type;
                 }
@@ -89,7 +89,7 @@ var app = angular.module('cskiwi.general-utilities', [])
                 // broadcast status
                 $rootScope.$broadcast('onlineUpdate', newStatus);
             });
-            if (window.cordova) {
+            if (window.cordova && activePlugins.network) {
                 $rootScope.$watch(function watchFunction() {
                     return info.connection.type;
                 }, function (newStatus) {
@@ -104,7 +104,9 @@ var app = angular.module('cskiwi.general-utilities', [])
          * Call watchers
          */
          networkInfoWatchers();
-         return info;}
+         return info;
+     }
+
      var checkPlugins = function () {
         var plugins = cordova.require("cordova/plugin_list").metadata;
         if (typeof plugins['cordova-plugin-network-information'] !== "undefined"){
@@ -118,9 +120,8 @@ var app = angular.module('cskiwi.general-utilities', [])
 
 
     checkPlugins();
-    if (activePlugins.device) self.deviceInfo = deviceInfo();
-    if (activePlugins.network) self.networkInfo = networkInfo();
-
+    self.deviceInfo = deviceInfo();
+    self.networkInfo = networkInfo();
 
     return self;
 });
