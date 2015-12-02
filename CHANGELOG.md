@@ -1,4 +1,9 @@
 Version numbers correspond to `bower.json` version
+# 0.1.12
+
+## Features
+Plugin check before calling the stuff
+
 # 0.1.11
 
 ## Bug Fixes
