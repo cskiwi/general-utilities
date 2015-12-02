@@ -1,4 +1,10 @@
 Version numbers correspond to `bower.json` version
+# 0.1.8
+
+## Bug Fixes
+Better handling network stuff
+device info updated
+
 # 0.1.7
 
 ## Bug Fixes

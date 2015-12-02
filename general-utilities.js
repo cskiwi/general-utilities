@@ -8,7 +8,7 @@
 'use strict';
 
 var app = angular.module('cskiwi.general-utilities', [])
-.factory('cskiwiUtilities', function ($rootScope, $window) {
+.factory('cskiwiUtilities', function ($rootScope, $window, $timeout) {
 
 
     //public methods & properties
@@ -22,11 +22,11 @@ var app = angular.module('cskiwi.general-utilities', [])
     //private methods and properties - should ONLY expose methods and properties publicly (via the 'return' object) that are supposed to be used; everything else (helper methods that aren't supposed to be called externally) should be private.
     var deviceInfo = function () {
         var info = {
+            isOpera: false,
             isFirefox: false,
-            isSafarie: false,
+            isSafari: false,
             isChrome: false,
-            isIe: false,
-            isOpera: false
+            isIe: false
         };
 
         function isMobile() {
@@ -36,6 +36,14 @@ var app = angular.module('cskiwi.general-utilities', [])
             })(navigator.userAgent || navigator.vendor || window.opera);
             return check;
         }
+
+       
+
+        info.isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0; // Opera 8.0+ (UA detection to detect Blink/v8-powered Opera)
+        info.isFirefox = typeof InstallTrigger !== 'undefined'; // Firefox 1.0+
+        info.isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0; // At least Safari 3+: "[object HTMLElementConstructor]"
+        info.isChrome = !!window.chrome && !info.isOpera; // Chrome 1+
+        info.isIe = /*@cc_on!@*/false || !!document.documentMode; // At least IE6
 
         if (window.cordova) {
             info.device = {};
@@ -47,17 +55,9 @@ var app = angular.module('cskiwi.general-utilities', [])
             info.device.version = device.version;
         }
 
-        info.isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0; // Opera 8.0+ (UA detection to detect Blink/v8-powered Opera)
-        info.isFirefox = typeof InstallTrigger !== 'undefined'; // Firefox 1.0+
-        info.isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0; // At least Safari 3+: "[object HTMLElementConstructor]"
-        info.isChrome = !!window.chrome && !info.isOpera; // Chrome 1+
-        info.isIE = /*@cc_on!@*/false || !!document.documentMode; // At least IE6
-
         info.mobile = isMobile();
         return info;
     };
-
-
 
     var networkInfo = function () {
         /*
@@ -66,23 +66,30 @@ var app = angular.module('cskiwi.general-utilities', [])
         var info = {
             online: window.navigator.onLine
         };
+        if (window.cordova) {
+            info.connection = {};
+            info.connection.type = navigator.connection.type;
+        }
 
         /*
          * Methods
          */
+        var onLineEvent = function () {
+            $timeout(function () {
+                console.debug("New status", window.navigator.onLine);
+                if (window.navigator.onLine !== info.online)
+                    info.online = window.navigator.onLine;
+
+                if (window.cordova && window.navigator.onLine === true) {
+                    if (info.connection.type !== navigator.connection.type)
+                        info.connection.type = navigator.connection.type;
+                }
+            });
+        }
         var networkInfoWatchers = function () {
             // check if online
-            $window.addEventListener("offline", function () {
-                $rootScope.$apply(function () {
-                    info.online = false;
-                });
-            }, false);
-
-            $window.addEventListener("online", function () {
-                $rootScope.$apply(function () {
-                    info.online = true;
-                });
-            }, false);
+            $window.addEventListener("online", onLineEvent, false);
+            $window.addEventListener("offline", onLineEvent, false);
 
             // update changes
             $rootScope.$watch(function watchFunction() {
@@ -90,7 +97,6 @@ var app = angular.module('cskiwi.general-utilities', [])
             }, function (newStatus) {
                 // broadcast status
                 $rootScope.$broadcast('onlineUpdate', newStatus);
-                self.networkInfo.online = newStatus;
             });
             if (window.cordova) {
                 $rootScope.$watch(function watchFunction() {
@@ -98,20 +104,10 @@ var app = angular.module('cskiwi.general-utilities', [])
                 }, function (newStatus) {
                     // broadcast status
                     $rootScope.$broadcast('connectionTypeUpdate', newStatus);
-                    self.networkInfo.connection.type = newStatus;
                 });
             }
 
         };
-
-        /*
-         * Process
-         */
-       
-        if (window.cordova) {
-            info.connection = {};
-            info.connection.type = navigator.connection.type;
-        }
 
         /*
          * Call watchers
