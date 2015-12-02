@@ -57,47 +57,67 @@ var app = angular.module('cskiwi.general-utilities', [])
         return info;
     };
 
-    
-    
+
+
     var networkInfo = function () {
-        var info = {
-            online: false
-    };
+        /*
+         * Methods
+         */
         var networkInfoWatchers = function () {
             // check if online
             $window.addEventListener("offline", function () {
                 $rootScope.$apply(function () {
-                    $rootScope.online = false;
+                    info.online = false;
                 });
             }, false);
 
             $window.addEventListener("online", function () {
                 $rootScope.$apply(function () {
-                    $rootScope.online = true;
+                    info.online = true;
                 });
             }, false);
+
+            // update changes
+            $rootScope.$watch(function watchFunction() {
+                return info.online;
+            }, function (newStatus) {
+                // broadcast status
+                $rootScope.$broadcast('onlineUpdate', newStatus);
+                self.networkInfo.online = newStatus;
+            });
+            if (window.cordova) {
+                $rootScope.$watch(function watchFunction() {
+                    return info.connection.type;
+                }, function (newStatus) {
+                    // broadcast status
+                    $rootScope.$broadcast('connectionTypeUpdate', newStatus);
+                    self.networkInfo.connection.type = newStatus;
+                });
+            }
+
         };
 
-        $rootScope.online = window.navigator.onLine;
-        // update changes
-        $rootScope.$watch('online', function (newStatus) {
-            // broadcast status
-            $rootScope.$broadcast('onlineUpdate', newStatus);
-            self.networkInfo.online = newStatus;
-        });
+
+        /*
+         * Stuff
+         */
+        var info = {
+            online: window.navigator.onLine
+        };
+      
 
         if (window.cordova) {
             info.connection = {};
             info.connection.type = navigator.connection.type;
         }
 
-
+        /*
+         * Call watchers
+         */
         networkInfoWatchers();
         return info;
     }
 
-   
-   
 
     self.deviceInfo = deviceInfo();
     self.networkInfo = networkInfo();
