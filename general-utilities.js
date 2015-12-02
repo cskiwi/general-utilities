@@ -61,6 +61,13 @@ var app = angular.module('cskiwi.general-utilities', [])
 
     var networkInfo = function () {
         /*
+        * Stuff
+        */
+        var info = {
+            online: window.navigator.onLine
+        };
+
+        /*
          * Methods
          */
         var networkInfoWatchers = function () {
@@ -97,15 +104,10 @@ var app = angular.module('cskiwi.general-utilities', [])
 
         };
 
-
         /*
-         * Stuff
+         * Process
          */
-        var info = {
-            online: window.navigator.onLine
-        };
-      
-
+       
         if (window.cordova) {
             info.connection = {};
             info.connection.type = navigator.connection.type;
