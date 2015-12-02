@@ -1,5 +1,5 @@
 Version numbers correspond to `bower.json` version
-# 0.1.9
+# 0.1.10
 
 ## Bug Fixes
 Better handling network stuff
