@@ -58,7 +58,6 @@ var app = angular.module('cskiwi.general-utilities', [])
         info.mobile = isMobile();
         return info;
     };
-
     var networkInfo = function () {
         /*
         * Stuff
@@ -115,8 +114,12 @@ var app = angular.module('cskiwi.general-utilities', [])
         networkInfoWatchers();
         return info;
     }
+    var checkPlugins = function () {
+        console.debug(window.cordova);
+    }
 
 
+    checkPlugins();
     self.deviceInfo = deviceInfo();
     self.networkInfo = networkInfo();
 
