@@ -37,7 +37,6 @@ var app = angular.module('cskiwi.general-utilities', [])
             return check;
         }
 
-        var device = {};
         if (window.cordova) {
             info.device = {};
             info.device.name = device.name;
@@ -57,31 +56,51 @@ var app = angular.module('cskiwi.general-utilities', [])
         info.mobile = isMobile();
         return info;
     };
-    var networkInfoWatchers = function () {
-        // check if online
-        $window.addEventListener("offline", function () {
-            $rootScope.$apply(function () {
-                $rootScope.online = false;
-            });
-        }, false);
 
-        $window.addEventListener("online", function () {
-            $rootScope.$apply(function () {
-                $rootScope.online = true;
-            });
-        }, false);
+    
+    
+    var networkInfo = function () {
+        var info = {
+            online: false
     };
+        var networkInfoWatchers = function () {
+            // check if online
+            $window.addEventListener("offline", function () {
+                $rootScope.$apply(function () {
+                    $rootScope.online = false;
+                });
+            }, false);
 
-    $rootScope.online = window.navigator.onLine;
-    networkInfoWatchers();
-    // update changes
-    $rootScope.$watch('online', function (newStatus) {
-        // broadcast status
-        $rootScope.$broadcast('onlineUpdate', newStatus);
-        self.networkInfo.online = newStatus;
-    });
+            $window.addEventListener("online", function () {
+                $rootScope.$apply(function () {
+                    $rootScope.online = true;
+                });
+            }, false);
+        };
+
+        $rootScope.online = window.navigator.onLine;
+        // update changes
+        $rootScope.$watch('online', function (newStatus) {
+            // broadcast status
+            $rootScope.$broadcast('onlineUpdate', newStatus);
+            self.networkInfo.online = newStatus;
+        });
+
+        if (window.cordova) {
+            info.connection = {};
+            info.connection.type = navigator.connection.type;
+        }
+
+
+        networkInfoWatchers();
+        return info;
+    }
+
+   
+   
 
     self.deviceInfo = deviceInfo();
+    self.networkInfo = networkInfo();
 
 
     return self;

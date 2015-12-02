@@ -1,4 +1,9 @@
 Version numbers correspond to `bower.json` version
+# 0.1.5
+
+## Features
+Better cordova support
+
 # 0.1.4
 
 ## Features
