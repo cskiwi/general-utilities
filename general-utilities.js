@@ -2,15 +2,13 @@
 
 var app = angular.module('cskiwi.general-utilities', [])
 .factory('cskiwiUtilities', function ($rootScope, $window, $timeout) {
-
+    var activePlugins = {
+        network : false,
+        device : false
+    };
 
     //public methods & properties
-    var self = {
-        networkInfo: {
-            online: false
-        },
-        deviceInfo: null
-    };
+    var self = {};
 
     //private methods and properties - should ONLY expose methods and properties publicly (via the 'return' object) that are supposed to be used; everything else (helper methods that aren't supposed to be called externally) should be private.
     var deviceInfo = function () {
@@ -30,7 +28,7 @@ var app = angular.module('cskiwi.general-utilities', [])
             return check;
         }
 
-       
+
 
         info.isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0; // Opera 8.0+ (UA detection to detect Blink/v8-powered Opera)
         info.isFirefox = typeof InstallTrigger !== 'undefined'; // Firefox 1.0+
@@ -38,7 +36,7 @@ var app = angular.module('cskiwi.general-utilities', [])
         info.isChrome = !!window.chrome && !info.isOpera; // Chrome 1+
         info.isIe = /*@cc_on!@*/false || !!document.documentMode; // At least IE6
 
-        if (window.cordova) {
+        if (window.cordova && activePlugins.device){
             info.device = {};
             info.device.name = device.name;
             info.device.cordova = device.cordova;
@@ -51,6 +49,7 @@ var app = angular.module('cskiwi.general-utilities', [])
         info.mobile = isMobile();
         return info;
     };
+    
     var networkInfo = function () {
         /*
         * Stuff
@@ -58,7 +57,7 @@ var app = angular.module('cskiwi.general-utilities', [])
         var info = {
             online: window.navigator.onLine
         };
-        if (window.cordova) {
+        if (window.cordova && activePlugins.network) {
             info.connection = {};
             info.connection.type = navigator.connection.type;
         }
@@ -66,13 +65,13 @@ var app = angular.module('cskiwi.general-utilities', [])
         /*
          * Methods
          */
-        var onLineEvent = function () {
+         var onLineEvent = function () {
             $timeout(function () {
                 console.debug("New status", window.navigator.onLine);
                 if (window.navigator.onLine !== info.online)
                     info.online = window.navigator.onLine;
 
-                if (window.cordova && window.navigator.onLine === true) {
+                if (window.cordova && window.navigator.onLine === true && activePlugins.network) {
                     if (info.connection.type !== navigator.connection.type)
                         info.connection.type = navigator.connection.type;
                 }
@@ -90,7 +89,7 @@ var app = angular.module('cskiwi.general-utilities', [])
                 // broadcast status
                 $rootScope.$broadcast('onlineUpdate', newStatus);
             });
-            if (window.cordova) {
+            if (window.cordova && activePlugins.network) {
                 $rootScope.$watch(function watchFunction() {
                     return info.connection.type;
                 }, function (newStatus) {
@@ -104,18 +103,25 @@ var app = angular.module('cskiwi.general-utilities', [])
         /*
          * Call watchers
          */
-        networkInfoWatchers();
-        return info;
-    }
-    var checkPlugins = function () {
-        console.debug(window.cordova);
+         networkInfoWatchers();
+         return info;
+     }
+
+     var checkPlugins = function () {
+        var plugins = cordova.require("cordova/plugin_list").metadata;
+        if (typeof plugins['cordova-plugin-network-information'] !== "undefined"){
+            activePlugins.network = true;
+        }
+
+        if (typeof plugins['cordova-plugin-device'] !== "undefined"){
+            activePlugins.device = true;
+        }
     }
 
 
     checkPlugins();
     self.deviceInfo = deviceInfo();
     self.networkInfo = networkInfo();
-
 
     return self;
 });
