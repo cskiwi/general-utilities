@@ -1,7 +1,7 @@
 
 Version numbers correspond to `bower.json` version
 
-# 0.1.17
+# 0.1.18
 
 ## Features
 File upload is added

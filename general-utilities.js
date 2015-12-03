@@ -1,14 +1,17 @@
 'use strict';
 
-var app = angular.module('cskiwi.general-utilities', [])
-.factory('cskiwiUtilities', function ($rootScope, $window, $timeout) {
-    var activePlugins = {
-        network : false,
-        device : false
-    };
+var app = angular.module('cskiwi.general-utilities', ['ngCordova'])
+.factory('generalUtilities', function ($rootScope, $window, $timeout, $cordovaCamera, $cordovaDevice,$cordovaActionSheet,$cordovaNetwork) {
+    
 
     //public methods & properties
-    var self = {};
+    var self = {
+        activePlugins : {
+            network : false,
+            device : false,
+            camera: false
+        }
+    };
 
     //private methods and properties - should ONLY expose methods and properties publicly (via the 'return' object) that are supposed to be used; everything else (helper methods that aren't supposed to be called externally) should be private.
     var deviceInfo = function () {
@@ -36,15 +39,16 @@ var app = angular.module('cskiwi.general-utilities', [])
         info.isChrome = !!window.chrome && !info.isOpera; // Chrome 1+
         info.isIe = /*@cc_on!@*/false || !!document.documentMode; // At least IE6
 
-        if (window.cordova && activePlugins.device){
+        if (window.cordova && self.activePlugins.device){
             info.device = {};
-            info.device.name = device.name;
-            info.device.cordova = device.cordova;
+            info.device.name =  device.name;
+            info.device.cordova = $cordovaDevice.getCordova();
             info.device.platform = device.platform;
-            info.device.UUID = device.uuid;
-            info.device.model = device.model;
-            info.device.version = device.version;
+            info.device.UUID = $cordovaDevice.getUUID();
+            info.device.model = $cordovaDevice.getModel();
+            info.device.version = $cordovaDevice.getVersion();
         }
+
 
         info.mobile = isMobile();
         return info;
@@ -57,23 +61,24 @@ var app = angular.module('cskiwi.general-utilities', [])
         var info = {
             online: window.navigator.onLine
         };
-        if (window.cordova && activePlugins.network) {
+        if (window.cordova && self.activePlugins.network) {
             info.connection = {};
-            info.connection.type = navigator.connection.type;
+            info.connection.type = $cordovaNetwork.getNetwork();
         }
 
         /*
          * Methods
          */
-         var onLineEvent = function () {
+         var onLineEvent = function (event, network, stuff, things) {
             $timeout(function () {
-                console.debug("New status", window.navigator.onLine);
                 if (window.navigator.onLine !== info.online)
                     info.online = window.navigator.onLine;
 
-                if (window.cordova && window.navigator.onLine === true && activePlugins.network) {
-                    if (info.connection.type !== navigator.connection.type)
-                        info.connection.type = navigator.connection.type;
+                if (window.cordova && window.navigator.onLine === true && self.activePlugins.network) {
+                    if (info.connection.type !== $cordovaNetwork.getNetwork()) {
+                        info.connection.type =  $cordovaNetwork.getNetwork();
+                        console.debug("New status", $cordovaNetwork.getNetwork());
+                    }
                 }
             });
         }
@@ -89,13 +94,9 @@ var app = angular.module('cskiwi.general-utilities', [])
                 // broadcast status
                 $rootScope.$broadcast('onlineUpdate', newStatus);
             });
-            if (window.cordova && activePlugins.network) {
-                $rootScope.$watch(function watchFunction() {
-                    return info.connection.type;
-                }, function (newStatus) {
-                    // broadcast status
-                    $rootScope.$broadcast('connectionTypeUpdate', newStatus);
-                });
+            if (window.cordova && self.activePlugins.network) {
+               // listen for Online event
+                $rootScope.$on('$cordovaNetwork:online', onLineEvent, false)
             }
 
         };
@@ -108,15 +109,26 @@ var app = angular.module('cskiwi.general-utilities', [])
      }
 
      var checkPlugins = function () {
-        var plugins = cordova.require("cordova/plugin_list").metadata;
-        if (typeof plugins['cordova-plugin-network-information'] !== "undefined"){
-            activePlugins.network = true;
-        }
+        if (!window.cordova) return;
 
-        if (typeof plugins['cordova-plugin-device'] !== "undefined"){
-            activePlugins.device = true;
-        }
-    }
+        var plugins = cordova.require("cordova/plugin_list");
+        plugins.forEach(function(plugin){
+            switch(plugin.pluginId){
+                case "cordova-plugin-device":
+                    self.activePlugins.device = true;
+                    break;
+                case "cordova-plugin-network-information":
+                    self.activePlugins.network = true;
+                    break;
+                case "cordova-plugin-camera":
+                    self.activePlugins.camera = true;
+                    break;
+            }
+        })
+    };
+
+    
+
 
 
     checkPlugins();
