@@ -1,6 +1,6 @@
 {
   "name": "general-utilities",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "authors": [
     "Glenn Latomme <glenn.latomme@gmail.com>"
   ],
@@ -20,7 +20,8 @@
     "tests"
   ],
   "dependencies": {
-    "angular":"~1.4.8"
+    "angular":"~1.4.8",
+    "ngCordova": "0.1.23-alpha"
   },
   "main": [
     "general-utilities.js"
