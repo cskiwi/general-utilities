@@ -1,10 +1,11 @@
 'use strict';
 
 var app = angular.module('cskiwi.general-utilities', [])
-.factory('cskiwiUtilities', function ($rootScope, $window, $timeout) {
+.factory('cskiwiUtilities', function ($rootScope, $window, $timeout, $cordovaCamera, $cordovaDevice,$cordovaActionSheet,$cordovaNetwork) {
     var activePlugins = {
         network : false,
-        device : false
+        device : false,
+        camera: false
     };
 
     //public methods & properties
@@ -38,13 +39,16 @@ var app = angular.module('cskiwi.general-utilities', [])
 
         if (window.cordova && activePlugins.device){
             info.device = {};
-            info.device.name = device.name;
-            info.device.cordova = device.cordova;
+            info.device.name =  device.name;
+            info.device.cordova = $cordovaDevice.getCordova();
             info.device.platform = device.platform;
-            info.device.UUID = device.uuid;
-            info.device.model = device.model;
-            info.device.version = device.version;
+            info.device.UUID = $cordovaDevice.getUUID();
+            info.device.model = $cordovaDevice.getModel();
+            info.device.version = $cordovaDevice.getVersion();
+
+           
         }
+
 
         info.mobile = isMobile();
         return info;
@@ -59,21 +63,22 @@ var app = angular.module('cskiwi.general-utilities', [])
         };
         if (window.cordova && activePlugins.network) {
             info.connection = {};
-            info.connection.type = navigator.connection.type;
+            info.connection.type = $cordovaNetwork.getNetwork();
         }
 
         /*
          * Methods
          */
-         var onLineEvent = function () {
+         var onLineEvent = function (event, network, stuff, things) {
             $timeout(function () {
-                console.debug("New status", window.navigator.onLine);
                 if (window.navigator.onLine !== info.online)
                     info.online = window.navigator.onLine;
 
                 if (window.cordova && window.navigator.onLine === true && activePlugins.network) {
-                    if (info.connection.type !== navigator.connection.type)
-                        info.connection.type = navigator.connection.type;
+                    if (info.connection.type !== $cordovaNetwork.getNetwork()) {
+                        info.connection.type =  $cordovaNetwork.getNetwork();
+                        console.debug("New status", $cordovaNetwork.getNetwork());
+                    }
                 }
             });
         }
@@ -90,12 +95,8 @@ var app = angular.module('cskiwi.general-utilities', [])
                 $rootScope.$broadcast('onlineUpdate', newStatus);
             });
             if (window.cordova && activePlugins.network) {
-                $rootScope.$watch(function watchFunction() {
-                    return info.connection.type;
-                }, function (newStatus) {
-                    // broadcast status
-                    $rootScope.$broadcast('connectionTypeUpdate', newStatus);
-                });
+               // listen for Online event
+                $rootScope.$on('$cordovaNetwork:online', onLineEvent, false)
             }
 
         };
@@ -108,20 +109,65 @@ var app = angular.module('cskiwi.general-utilities', [])
      }
 
      var checkPlugins = function () {
-        var plugins = cordova.require("cordova/plugin_list").metadata;
-        if (typeof plugins['cordova-plugin-network-information'] !== "undefined"){
-            activePlugins.network = true;
-        }
+        if (!window.cordova) return;
 
-        if (typeof plugins['cordova-plugin-device'] !== "undefined"){
-            activePlugins.device = true;
+        var plugins = cordova.require("cordova/plugin_list");
+        plugins.forEach(function(plugin){
+            switch(plugin.pluginId){
+                case "cordova-plugin-device":
+                    activePlugins.device = true;
+                    break;
+                case "cordova-plugin-network-information":
+                    activePlugins.network = true;
+                    break;
+                case "cordova-plugin-camera":
+                    activePlugins.camera = true;
+                    break;
+            }
+        })
+    };
+
+    var takePhoto = function() {
+        // try camera plugin
+        if (activePlugins.camera){
+            var options = {
+                quality: 50,
+                destinationType: Camera.DestinationType.DATA_URL,
+                sourceType: Camera.PictureSourceType.CAMERA,
+                allowEdit: true,
+                encodingType: Camera.EncodingType.JPEG,
+                targetWidth: 100,
+                targetHeight: 100,
+                popoverOptions: CameraPopoverOptions,
+                saveToPhotoAlbum: false,
+                correctOrientation:true
+            };
+            $cordovaCamera.getPicture(options).then(
+                function(imageData, test) {
+                    console.debug(imageData);
+                }, function(err) {
+                    console.error("error")
+                }
+            ); 
+        } else {
+            // try native hTML5 get picture
+             var selectDialogueLink = $('<a href="">Select files</a>');
+             var fileSelector = $('<input type="file" />');
+
+             selectDialogueLink.click(function(){
+                 fileSelector.click();
+                 return false;
+             });
+             $('body').html(selectDialogueLink);
         }
-    }
+    };
+
 
 
     checkPlugins();
     self.deviceInfo = deviceInfo();
     self.networkInfo = networkInfo();
+    self.takePhoto = takePhoto;
 
     return self;
 });
