@@ -1,24 +1,36 @@
 <div ng-controller='HomeCtrl'>
     <h2>Usage</h2>
     <pre>
-angular.module('general-utilities-demo').controller('HomeCtrl', function ($scope, $rootScope, cskiwiUtilities) {
-    $scope.networkInfo = cskiwiUtilities.networkInfo;
-    $scope.deviceInfo = cskiwiUtilities.deviceInfo;
-});
+        angular.module('general-utilities-demo').controller('HomeCtrl', function ($scope, $rootScope, general-utilities) {
+        $scope.networkInfo = general-utilities.networkInfo;
+        $scope.deviceInfo = general-utilities.deviceInfo;
+    });
 </pre>
-    
-    the variables are auto updated when the value changes
-    
-    <h3>Events</h3>
-    <ul>
-        <li><strong>onlineUpdate</strong> : when it's updated from online / offline</li>
-        <li><strong>connectionTypeUpdate</strong> :  when the netwerk type changed</li>
-    </ul>
-    
-    
 
-    <h3>Example output</h3>
-    Output for this device is:
-    <pre>{{networkInfo|json}}</pre>
-    <pre>{{deviceInfo|json}}</pre>
+the variables are auto updated when the value changes
+
+<h3>Events</h3>
+<ul>
+    <li><strong>onlineUpdate</strong> : when it's updated from online / offline</li>
+    <li><strong>connectionTypeUpdate</strong> :  when the netwerk type changed</li>
+</ul>
+
+<div ng-app="fileUpload">Username
+    Drop File:
+    <div ngf-drop ngf-select ng-model="files" class="drop-box" 
+        ngf-drag-over-class="'dragover'" ngf-multiple="true" ngf-allow-dir="true"
+        accept="image/*,application/pdf" 
+        ngf-pattern="'image/*,application/pdf'">Drop pdfs or images here or click to upload</div>
+    <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
+    Files:
+    <ul>
+        <li ng-repeat="f in files" style="font:smaller">{{f.name}} {{f.$error}} {{f.$errorParam}}</li>
+    </ul>
+</div>
+
+
+<h3>Example output</h3>
+Output for this device is:
+<pre>{{networkInfo|json}}</pre>
+<pre>{{deviceInfo|json}}</pre>
 </div>

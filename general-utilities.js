@@ -1,15 +1,17 @@
 'use strict';
 
-var app = angular.module('cskiwi.general-utilities', [])
-.factory('cskiwiUtilities', function ($rootScope, $window, $timeout, $cordovaCamera, $cordovaDevice,$cordovaActionSheet,$cordovaNetwork) {
-    var activePlugins = {
-        network : false,
-        device : false,
-        camera: false
-    };
+var app = angular.module('cskiwi.general-utilities', ['ngCordova'])
+.factory('generalUtilities', function ($rootScope, $window, $timeout, $cordovaCamera, $cordovaDevice,$cordovaActionSheet,$cordovaNetwork) {
+    
 
     //public methods & properties
-    var self = {};
+    var self = {
+        activePlugins : {
+            network : false,
+            device : false,
+            camera: false
+        }
+    };
 
     //private methods and properties - should ONLY expose methods and properties publicly (via the 'return' object) that are supposed to be used; everything else (helper methods that aren't supposed to be called externally) should be private.
     var deviceInfo = function () {
@@ -37,7 +39,7 @@ var app = angular.module('cskiwi.general-utilities', [])
         info.isChrome = !!window.chrome && !info.isOpera; // Chrome 1+
         info.isIe = /*@cc_on!@*/false || !!document.documentMode; // At least IE6
 
-        if (window.cordova && activePlugins.device){
+        if (window.cordova && self.activePlugins.device){
             info.device = {};
             info.device.name =  device.name;
             info.device.cordova = $cordovaDevice.getCordova();
@@ -45,8 +47,6 @@ var app = angular.module('cskiwi.general-utilities', [])
             info.device.UUID = $cordovaDevice.getUUID();
             info.device.model = $cordovaDevice.getModel();
             info.device.version = $cordovaDevice.getVersion();
-
-           
         }
 
 
@@ -61,7 +61,7 @@ var app = angular.module('cskiwi.general-utilities', [])
         var info = {
             online: window.navigator.onLine
         };
-        if (window.cordova && activePlugins.network) {
+        if (window.cordova && self.activePlugins.network) {
             info.connection = {};
             info.connection.type = $cordovaNetwork.getNetwork();
         }
@@ -74,7 +74,7 @@ var app = angular.module('cskiwi.general-utilities', [])
                 if (window.navigator.onLine !== info.online)
                     info.online = window.navigator.onLine;
 
-                if (window.cordova && window.navigator.onLine === true && activePlugins.network) {
+                if (window.cordova && window.navigator.onLine === true && self.activePlugins.network) {
                     if (info.connection.type !== $cordovaNetwork.getNetwork()) {
                         info.connection.type =  $cordovaNetwork.getNetwork();
                         console.debug("New status", $cordovaNetwork.getNetwork());
@@ -94,7 +94,7 @@ var app = angular.module('cskiwi.general-utilities', [])
                 // broadcast status
                 $rootScope.$broadcast('onlineUpdate', newStatus);
             });
-            if (window.cordova && activePlugins.network) {
+            if (window.cordova && self.activePlugins.network) {
                // listen for Online event
                 $rootScope.$on('$cordovaNetwork:online', onLineEvent, false)
             }
@@ -115,59 +115,25 @@ var app = angular.module('cskiwi.general-utilities', [])
         plugins.forEach(function(plugin){
             switch(plugin.pluginId){
                 case "cordova-plugin-device":
-                    activePlugins.device = true;
+                    self.activePlugins.device = true;
                     break;
                 case "cordova-plugin-network-information":
-                    activePlugins.network = true;
+                    self.activePlugins.network = true;
                     break;
                 case "cordova-plugin-camera":
-                    activePlugins.camera = true;
+                    self.activePlugins.camera = true;
                     break;
             }
         })
     };
 
-    var takePhoto = function() {
-        // try camera plugin
-        if (activePlugins.camera){
-            var options = {
-                quality: 50,
-                destinationType: Camera.DestinationType.DATA_URL,
-                sourceType: Camera.PictureSourceType.CAMERA,
-                allowEdit: true,
-                encodingType: Camera.EncodingType.JPEG,
-                targetWidth: 100,
-                targetHeight: 100,
-                popoverOptions: CameraPopoverOptions,
-                saveToPhotoAlbum: false,
-                correctOrientation:true
-            };
-            $cordovaCamera.getPicture(options).then(
-                function(imageData, test) {
-                    console.debug(imageData);
-                }, function(err) {
-                    console.error("error")
-                }
-            ); 
-        } else {
-            // try native hTML5 get picture
-             var selectDialogueLink = $('<a href="">Select files</a>');
-             var fileSelector = $('<input type="file" />');
-
-             selectDialogueLink.click(function(){
-                 fileSelector.click();
-                 return false;
-             });
-             $('body').html(selectDialogueLink);
-        }
-    };
+    
 
 
 
     checkPlugins();
     self.deviceInfo = deviceInfo();
     self.networkInfo = networkInfo();
-    self.takePhoto = takePhoto;
 
     return self;
 });

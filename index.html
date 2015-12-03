@@ -4,16 +4,41 @@
     <meta charset="utf-8">
 
     <title>general-utilities</title>
-
+<style type="text/css">
+.button {
+    -moz-appearance: button;
+    /* Firefox */
+    -webkit-appearance: button;
+    /* Safari and Chrome */
+    padding: 10px;
+    margin: 10px;
+    width: 70px;
+}
+.drop-box {
+    background: #F8F8F8;
+    border: 5px dashed #DDD;
+    width: 200px;
+    height: 65px;
+    text-align: center;
+    padding-top: 25px;
+    margin: 10px;
+}
+.dragover {
+    border: 5px dashed blue;
+}
+</style>
 </head>
 <body>
 	<div ng-view></div>
 
+	<script type="text/javascript" src="vendor/jquery/dist/jquery.js"></script>
 	<script type="text/javascript" src="vendor/angular/angular.min.js"></script>
 	<script type="text/javascript" src="vendor/angular-route/angular-route.min.js"></script>
 	<script type="text/javascript" src="vendor/angular-sanitize/angular-sanitize.min.js"></script>
 	<script type="text/javascript" src="vendor/angular-touch/angular-touch.min.js"></script>
 	<script type="text/javascript" src="vendor/ngCordova/dist/ng-cordova.js"></script>
+	<script type="text/javascript" src="vendor/ng-file-upload-shim/ng-file-upload-shim.min.js"></script>
+	<script type="text/javascript" src="vendor/ng-file-upload/ng-file-upload.min.js"></script>
 	
 	<script type="text/javascript" src="general-utilities.js"></script>
 	<!--<script type="text/javascript" src="general-utilities.min.js"></script>-->

@@ -6,7 +6,7 @@
 'use strict';
 
 angular.module('general-utilities-demo', [
-'ngRoute', 'ngSanitize', 'ngTouch', 'ngCordova',		//additional angular modules
+'ngRoute', 'ngSanitize', 'ngTouch', 'ngCordova', 'ngFileUpload',		//additional angular modules
 'cskiwi.general-utilities'
 ]).
 config(function ($routeProvider, $locationProvider, $compileProvider) {
