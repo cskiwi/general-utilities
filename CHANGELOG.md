@@ -1,6 +1,6 @@
 
 Version numbers correspond to `bower.json` version
-# 0.1.14
+# 0.1.15
 
 ## Features
 More stuff
