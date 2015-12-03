@@ -1,6 +1,6 @@
 {
   "name": "general-utilities",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "authors": [
     "Glenn Latomme <glenn.latomme@gmail.com>"
   ],
@@ -21,7 +21,8 @@
   ],
   "dependencies": {
     "angular":"~1.4.8",
-    "ngCordova": "0.1.23-alpha"
+    "ngCordova": "0.1.23-alpha",
+    "ng-file-upload-shim": "~10.1.5"
   },
   "main": [
     "general-utilities.js"
